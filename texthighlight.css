@@ -8,26 +8,61 @@
 }
 #comment{
     height: 20px;
-    width: 70px;
+    width: 32px;
     border-radius: 1rem;
-    background: aliceblue;
+    background: url("chatbox-ellipses-outline.svg");
+    background-repeat: no-repeat;
     border: none;
     cursor: pointer;
 }
 #trash{
     height: 20px;
-    width: 60px;
+    width: 30px;
     border-radius: 1rem;
-    background: aliceblue;
+    background: url("trash-outline.svg");
+    background-repeat: no-repeat;
     border: none;
     cursor: pointer;
+    margin-left: 12px;
 
 }
 
 #contextmenu{
-    border: solid 1px;
-    background: black;
-    width: 21%;
-    padding:0.5%;
+    position : absolute;
+    /*border: solid 1px;*/
+    background: lightseagreen;
+    /*width: 13%;*/
+    padding:0.3%;
     border-radius: 1rem;
+}
+
+#comment-container{
+    display:none;
+}
+
+#cancel{
+    display: none;
+    float: left;
+    margin: 1%;
+    margin-left: 20%;
+
+}
+
+#save{
+    display : none;
+    margin: 1%;
+}
+#comment-area{
+    height: 100px;
+    width: 200px;
+}
+
+#menu{
+    text-align: center;
+}
+
+#edit{
+    display : none;
+    margin : 1%;
+    margin-left: 35%;
 }
