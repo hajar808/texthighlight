@@ -1,0 +1,33 @@
+.color-btn{
+    height: 20px;
+    width: 20px;
+    border-radius: 1rem;
+    border: none;
+    cursor: pointer;
+
+}
+#comment{
+    height: 20px;
+    width: 70px;
+    border-radius: 1rem;
+    background: aliceblue;
+    border: none;
+    cursor: pointer;
+}
+#trash{
+    height: 20px;
+    width: 60px;
+    border-radius: 1rem;
+    background: aliceblue;
+    border: none;
+    cursor: pointer;
+
+}
+
+#contextmenu{
+    border: solid 1px;
+    background: black;
+    width: 21%;
+    padding:0.5%;
+    border-radius: 1rem;
+}
