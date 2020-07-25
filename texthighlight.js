@@ -100,7 +100,8 @@
                             {
                                 tag: 'button',
                                 id: 'edit',
-                                inner: 'EDIT',
+
+
                                 onclick: '%edit%'
                             }
 
@@ -311,7 +312,14 @@
                     const clientRect = range.getBoundingClientRect();
                     const menu = texthighlight.querySelector("#contextmenu");
                     menu.style.left = clientRect.left + "px";
-                    menu.style.top = (clientRect.bottom -  clientRect.height - menu.clientHeight) + "px";
+                    const position =(clientRect.bottom -  clientRect.height - menu.clientHeight);
+                    if(position< 0){
+                        menu.style.top = clientRect.bottom +"px";
+                    }else{
+                        menu.style.top = (clientRect.bottom -  clientRect.height - menu.clientHeight) + "px";
+
+                    }
+
 
 
                 }
@@ -405,17 +413,17 @@
 
                 function updateComment(id,color,comment) {
                     self.db.get(id).then(
-                       result=> {
-                           if(result){
-                               if(color){
-                                   result.value.color = color;
-                               }
-                               if(comment){
-                                   result.value.comment = comment;
-                               }
-                               self.db.set({key:id,value:result.value});
-                           }
-                       }
+                        result=> {
+                            if(result){
+                                if(color){
+                                    result.value.color = color;
+                                }
+                                if(comment){
+                                    result.value.comment = comment;
+                                }
+                                self.db.set({key:id,value:result.value});
+                            }
+                        }
                     )
 
 
@@ -453,7 +461,6 @@
                   const elem = document.getElementById('trash');
                   elem.parentNode.removeChild(elem);
                   return false;
-
                  }*/
 
 
@@ -463,9 +470,6 @@
                  delBtn.textContent = 'Delete';
                  delBtn.className ='delBtn';
                  return delBtn;
-
-
-
               }*/
 
 

@@ -14,6 +14,7 @@
     background-repeat: no-repeat;
     border: none;
     cursor: pointer;
+    outline: none;
 }
 #trash{
     height: 20px;
@@ -24,6 +25,7 @@
     border: none;
     cursor: pointer;
     margin-left: 12px;
+    outline: none;
 
 }
 
@@ -34,6 +36,7 @@
     /*width: 13%;*/
     padding:0.3%;
     border-radius: 1rem;
+    min-width: 10%;
 }
 
 #comment-container{
@@ -44,13 +47,25 @@
     display: none;
     float: left;
     margin: 1%;
-    margin-left: 20%;
+    margin-left: 25%;
+    background: #ca4444;
+    border-radius:1rem ;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
 
 }
 
 #save{
     display : none;
     margin: 1%;
+    border-radius: 1rem ;
+    color: white;
+    font-weight: bold;
+    background: mediumseagreen;
+    border: none;
+    cursor: pointer;
 }
 #comment-area{
     height: 100px;
@@ -63,6 +78,14 @@
 
 #edit{
     display : none;
+    height: 20px;
+    width: 40px;
     margin : 1%;
-    margin-left: 35%;
+    margin-left: 41%;
+    background: url("create-outline.svg");
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    outline: none;
+
 }
