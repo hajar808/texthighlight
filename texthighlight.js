@@ -13,6 +13,7 @@
 
             texthighlight: {
                 id: 'texthighlight',
+                name: createUniqueId(),
                 inner: [
                     {
                         tag: 'div',
@@ -139,6 +140,8 @@
 
                 // set shortcut to help functions
                 $ = this.ccm.helper;
+                const texthighlight = $.html(self.texthighlight);
+                texthighlight.name = createUniqueId();
 
             };
 
@@ -148,6 +151,7 @@
                 let selection;
                 let range;
                 let markElement;
+
 
 
                 const texthighlight = $.html(self.texthighlight, {
@@ -195,6 +199,7 @@
                     }
 
                 });
+                let id = texthighlight.name;
 
                 const text = texthighlight.querySelector('#text');
                 getContent(text.innerHTML);
@@ -349,16 +354,17 @@
                 }
 
                 function setContent(content){
-                    const KEY ="ccm-content";
-                    self.db.set({key:KEY,value:content});
+
+                    self.db.set({key:id,value:content});
 
                 }
                 function getContent(content){
-                    const KEY ="ccm-content";
-                    self.db.get(KEY).then(
+
+                    self.db.get(id).then(
 
                         existContent=> {
-                            if(existContent){
+
+                            if(existContent && existContent.value){
                                 text.innerHTML = existContent.value;
                             }else{
                                 text.innerHTML = content;
@@ -486,6 +492,16 @@
             return (c=='x' ? r :(r&0x3|0x8)).toString(16);
         });
         return 'mark-' + uuid;
+    }
+
+    function createUniqueId(){
+        let dt = new Date().getTime();
+        let uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = (dt + Math.random()*16)%16 | 0;
+            dt = Math.floor(dt/16);
+            return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+        });
+        return 'texthighlight-' + uuid;
     }
 
     function p() {
