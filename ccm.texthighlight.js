@@ -115,7 +115,7 @@
             },
 
 
-            css: ["ccm.load", "texthighlight.css"]
+            css: ["ccm.load", "resources/texthighlight.css"]
 
         },
 
