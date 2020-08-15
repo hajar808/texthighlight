@@ -1,3 +1,13 @@
+
+/**
+ * @overview ccm component to create highlight and comment text
+ * @author hajar menssouri <hajar.menssouri@smail.inf.h-brs.de>, 2020
+ * @license The MIT License (MIT)
+ * @version latest (1.0.0)
+ * */
+
+
+
 (function () {
 
     var component = {
@@ -141,7 +151,8 @@
                 // set shortcut to help functions
                 $ = this.ccm.helper;
                 const texthighlight = $.html(self.texthighlight);
-                texthighlight.name = createUniqueId();
+
+                texthighlight.setAttribute("name",createUniqueId());
 
             };
 
@@ -199,7 +210,7 @@
                     }
 
                 });
-                let id = texthighlight.name;
+                let id = texthighlight.getAttribute("name");
 
                 const text = texthighlight.querySelector('#text');
                 getContent(text.innerHTML);
@@ -460,20 +471,11 @@
 
 
 
-                /* function removeDummy() {
-                  const elem = document.getElementById('trash');
-                  elem.parentNode.removeChild(elem);
-                  return false;
-                 }*/
+
 
 
             };
-            /*  makeDelBtn: function delet(){
-                 const delBtn = document.createElement('button');
-                 delBtn.textContent = 'Delete';
-                 delBtn.className ='delBtn';
-                 return delBtn;
-              }*/
+         
 
 
         }
