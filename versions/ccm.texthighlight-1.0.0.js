@@ -19,8 +19,9 @@
         // ccm: '//ccmjs.github.io/ccm/ccm.js',
 
         config: {
-            db: ["ccm.store", { name: 'ccm-texthighlight' }],
+            //db: ["ccm.store", { name: 'ccm-texthighlight' }],
 
+            db: ["ccm.store", { name: 'ccm-texthighlight',url: "https://ccm2.inf.h-brs.de" }],
             texthighlight: {
                 id: 'texthighlight',
                 name: createUniqueId(),
@@ -475,7 +476,7 @@
 
 
             };
-         
+
 
 
         }
