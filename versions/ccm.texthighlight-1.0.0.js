@@ -254,12 +254,9 @@
                 }
 
                 function isAlreadyMarked() {
-                    // Parent element von selektiertem text
+
                     const elem = selection.anchorNode.parentElement;
-                    // Am nächsten vorhandene mark element von selektiertem text
                     const closeElem = elem.closest('mark');
-                    // wenn parent element mark element ist dann ist es markiert
-                    // wenn selektierte Text in closeElem ist dann ist es auch markiert
                     if (elem.nodeName === "MARK" || (closeElem && closeElem.contains(elem))) {
                         return true;
                     } else {
