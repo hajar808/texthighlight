@@ -224,7 +224,12 @@
                 function handleSelection() {
 
                     shadow = self.element.parentNode;
-                    selection = shadow.getSelection();
+                    if(shadow.getSelection){
+                        selection = shadow.getSelection();
+                    }else {
+                        selection = window.getSelection();
+                    }
+
                     range = selection.getRangeAt(0);
                     const edit =texthighlight.querySelector("#edit");
                     edit.style.display ="none";
