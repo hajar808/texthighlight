@@ -20,7 +20,7 @@
     height: 20px;
     width: 30px;
     border-radius: 1rem;
-    background: url("../trash-outline.svg");
+    background: url("trash-outline.svg");
     background-repeat: no-repeat;
     border: none;
     cursor: pointer;
