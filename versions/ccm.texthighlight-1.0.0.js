@@ -115,7 +115,7 @@
             },
 
 
-            css: ["ccm.load", "resources/texthighlight.css"]
+            css: ["ccm.load", "https://hajar808.github.io/texthighlight/resources/texthighlight.css"]
 
         },
 

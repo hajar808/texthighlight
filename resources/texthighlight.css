@@ -10,7 +10,7 @@
     height: 20px;
     width: 32px;
     border-radius: 1rem;
-    background: url("../chatbox-ellipses-outline.svg");
+    background: url("https://hajar808.github.io/texthighlight/resources/chatbox-ellipses-outline.svg");
     background-repeat: no-repeat;
     border: none;
     cursor: pointer;
@@ -20,7 +20,7 @@
     height: 20px;
     width: 30px;
     border-radius: 1rem;
-    background: url("trash-outline.svg");
+    background: url("https://hajar808.github.io/texthighlight/resources/trash-outline.svg");
     background-repeat: no-repeat;
     border: none;
     cursor: pointer;
@@ -82,7 +82,7 @@
     width: 40px;
     margin : 1%;
     margin-left: 41%;
-    background: url("../create-outline.svg");
+    background: url("https://hajar808.github.io/texthighlight/resources/create-outline.svg");
     background-repeat: no-repeat;
     border: none;
     cursor: pointer;
