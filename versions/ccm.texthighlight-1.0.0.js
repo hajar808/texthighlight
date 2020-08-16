@@ -29,7 +29,7 @@
                     {
                         tag: 'div',
                         id: 'text',
-                        inner: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimataLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. '
+                        inner: '<h1>Select some text</h1><p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimataLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor</p><p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimataLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor</p><p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimataLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor</p>'
                     },
                     {
                         id: 'contextmenu',
@@ -169,11 +169,16 @@
                         const button = e.srcElement;
                         const color = button.style.background;
                         if (!isAlreadyMarked()) {
-                            surroundText(color);
+                            //surroundText(color);
+                            // TODO call highlight
+
+                            const id = create_UUID();
+                            addHighlight(id, selection, range, color);
                         }else{
                             const mark = getMarkElement();
                             mark.style.background = color;
-                            updateComment(mark.id,color,null);
+                            const id = mark.className;
+                            updateComment(id,color,null);
 
                         }
                         setContent(text.innerHTML);
@@ -257,12 +262,28 @@
 
                 }
 
+                function surroundMark(color, id, range){
+                    const mark = document.createElement("mark");
+                    mark.style.backgroundColor = color;
+                    mark.classList.add(id);
+                    mark.appendChild(range.extractContents());
+                    range.insertNode(mark);
+                }
+
                 function deleteMark() {
                     if (isAlreadyMarked()) {
                         const elem = getMarkElement();
-                        elem.replaceWith(...elem.childNodes);
+                        const markId = elem.className;
+                        if(!markId){
+                            return;
+                        }
+                        let markList = texthighlight.querySelectorAll("."+ markId);
+                        markList.forEach(mark => {
+                            mark.replaceWith(...mark.childNodes);
+                        })
+                        ////elem.replaceWith(...elem.childNodes);
                         hideMenu();
-                        self.db.del(markElement.id);
+                        self.db.del(markId);
 
 
                     }
@@ -306,7 +327,7 @@
                     }else{
                         comment.style.visibility = "visible";
                         trash.style.visibility = "visible";
-                        getComment(markElement.id);
+                        getComment(markElement.className);
                     }
                     setMenuPosition();
                     menu.style.visibility = "visible"
@@ -387,8 +408,8 @@
                 }
 
                 function saveComment() {
-                    const id = markElement.id;
-                    const color = markElement.style.background;
+                    const id = markElement.className;
+                    const color = markElement.style.backgroundColor;
                     const text = texthighlight.querySelector("#comment-area");
                     const comment = text.value;
 
@@ -407,7 +428,7 @@
                             if(comment){
                                 const text =texthighlight.querySelector("#comment-area");
                                 text.value = comment.value.comment;
-                                text.style.background = comment.value.color;
+                                text.style.backgroundColor = comment.value.color;
                                 text.readOnly = true;
                                 const edit =texthighlight.querySelector("#edit");
                                 edit.style.display ="block";
@@ -471,8 +492,168 @@
 
                 }
 
+                function addHighlight(id, selection, range, color){
+                    let root = range.commonAncestorContainer;
+                    let start = range.startContainer;
+                    let end = range.endContainer;
+
+                    let firstElement = start.parentElement;
+                    let lastElement = end.parentElement;
+                    let nextElement = firstElement.nextElementSibling;
+
+                    if(start.parentElement === root || root.nodeType === 3 || end.parentElement.contains(start.parentElement)){
+                        surroundMark(color, id, range);
+                    }else{
+                        firstElement = findFirstElement(root, firstElement);
+                        nextElement = firstElement.nextElementSibling;
+
+                        traverseFirstElement(start, firstElement, color, range.startOffset, false, id );
+                        while(nextElement !== null && nextElement !== end.parentElement){
+                            if(nextElement.contains(end.parentElement)){
+                                lastElement = nextElement;
+                                break;
+                            }
+                            traverseMiddleElement(nextElement, color, id);
+                            nextElement = nextElement.nextSibling;
+                        }
+                        if(end.parentElement === lastElement){
+                            traverseLastElement(end, lastElement, color, range.endOffset, id);
+                        }else{
+                            traverseDeepElement(end.parentElement, lastElement, color, range.endOffset, id);
+                        }
+
+                    }
+                    selection.removeAllRanges();
+
+                }
+
+                function traverseFirstElement(start, element, color, startOffset, after, id) {
+                    if(element.nodeType === 3){
+                        const originalText = element.textContent;
+                        if(start === element){
+                            if(isMark(element)){
+                                return true;
+                            }
+                            const markText = originalText.substring(startOffset);
+                            const prevText = originalText.substring(0,startOffset);
+                            const rootElement = element.parentElement;
+                            const mark = markAndReplace(element,markText,color,id);
+                            if(prevText){
+                                const prevElement = document.createTextNode(prevText);
+                                rootElement.insertBefore(prevElement, mark);
+                            }
+                            return true;
+                        }else if(after === undefined || after === true ){
+                            if(isMark(element)){
+                                return true;
+                            }
+                            markAndReplace(element, originalText, color, id);
+                            return  true;
+                        }else{
+                            return false;
+                        }
+                    }
+                    for(let i = 0; i< element.childNodes.length ; ++i){
+                        after = traverseFirstElement(start, element.childNodes[i], color, startOffset, after, id);
+                    }
+
+                }
+
+                function traverseMiddleElement(element, color, id){
+                    if(element.nodeType === 3){
+                        if(isMark(element)){
+                            return;
+                        }
+                        const originalText = element.textContent;
+                        markAndReplace(element, originalText, color, id);
+                        return;
+                    }
+                    for(let i = 0; i< element.childNodes.length; ++i){
+                        traverseMiddleElement(element.childNodes[i], color, id);
+                    }
+                }
+
+                function traverseLastElement(end, element, color , endOffset, id){
+                    if(element.nodeType === 3){
+                        const originalText = element.textContent;
+                        if(end === element){
+                            if(isMark(element)){
+                                return false;
+                            }
+                            const markText = originalText.substring(0,endOffset);
+                            const nextText = originalText.substring(endOffset);
+                            const mark = markAndReplace(element, markText, color,id);
+                            if(nextText){
+                                mark.outerHTML += nextText;
+                            }
+                            return false;
+                        }else{
+                            if(isMark(element)){
+                                return true;
+                            }
+                            markAndReplace(elemnt, originalText, color, id);
+                            return true;
+                        }
+                    }
+                    for( let i=0 ; element.childNodes.length; ++i){
+                        let next = traverseLastElement(end, element.childNodes[i], color, endOffset, id);
+                        if(next !== undefined && next === false){
+                            return ;
+                        }
+                    }
+                }
+
+                function traverseDeepElement(lastElement, element, color, endOffSet, id){
+                    if(element.nodeType === 3){
+                        const originalText = element.textContent;
+                        if(element.parentElement ===lastElement){
+                            const markText = originalText.substring(0,endOffset);
+                            const nextText = originalText.substring(endOffset);
+                            const mark = markAndReplace(element, markText, color,id);
+                            if(nextText){
+                                mark.outerHTML += nextText;
+                            }
+                            return false;
+                        }else{
+                            markAndReplace(element, originalText, color, id);
+                            return true;
+                        }
+                    }
+                    for(let i= 0; elemnt.childNodes.length; ++i){
+                        let next = traverseDeepElement(lastElement, element.childNodes[i], color, endOffSet, id);
+                        if(!next){
+                            return;
+                        }
+                    }
+                }
+
+                function findFirstElement(container, startElement){
+                    let firstElement = startElement;
+                    while(firstElement.parentElement !== container){
+                        firstElement = firstElement.parentElement;
+                    }
+                    return firstElement;
+                }
 
 
+                function isMark(e){
+                    return e.parentElement.nodeName === "MARK";
+                }
+
+                function createMark(text, color, id){
+                    let mark = document.createElement("mark");
+                    mark.classList.add(id);
+                    mark.style.backgroundColor = color;
+                    mark.appendChild(document.createTextNode(text));
+                    return mark;
+                }
+
+                function markAndReplace(e, text, color, id){
+                    let mark = createMark(text, color, id);
+                    let rootElement = e.parentElement;
+                    rootElement.replaceChild(mark, e);
+                    return mark;
+                }
 
 
 
