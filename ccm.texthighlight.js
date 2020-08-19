@@ -1,3 +1,13 @@
+
+/**
+ * @overview ccm component to create highlight and comment text
+ * @author hajar menssouri <hajar.menssouri@smail.inf.h-brs.de>, 2020
+ * @license The MIT License (MIT)
+ * @version latest (1.0.0)
+ * */
+
+
+
 (function () {
 
     var component = {
@@ -6,10 +16,10 @@
         version: [1, 0, 0],
 
         ccm: 'https://ccmjs.github.io/ccm/versions/ccm-24.0.1.js',
-        // ccm: '//ccmjs.github.io/ccm/ccm.js',
 
         config: {
-            db: ["ccm.store", { name: 'ccm-texthighlight' }],
+
+            db: ["ccm.store", { name: 'ccm-texthighlight',url: "https://ccm2.inf.h-brs.de" }],
 
             texthighlight: {
                 id: 'texthighlight',
@@ -18,8 +28,7 @@
                     {
                         tag: 'div',
                         id: 'text',
-                        inner: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimataLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. '
-
+                        inner: '<h1>Markieren Sie den Text</h1><h1>Die erdrückende Langeweile</h1><p>Von Chris Mills</p><h2>Kapitel 1: Die dunkle Nacht</h2><p>Es war eine dunkle Nacht. Irgendwo hörte man eine Eule rufen. Der Regen strömte herab auf... </p><h2>Kapitel 2: Die ewige Stille</h2><p>Unser Protagonist kann gerade so aus dem Schatten heraus flüstern...</p><h3>Der Geist spricht</h3><p>Nachdem mehrere Stunden der Stille vorbei gegangen waren, setzte sich plötzlich der Geist aufrecht hin und rief "Bitte habt erbarmen mit meiner Seele!"</p>'
 
                     },
                     {
@@ -115,7 +124,7 @@
             },
 
 
-            css: ["ccm.load", "resources/texthighlight.css"]
+            css: ["ccm.load", "https://hajar808.github.io/texthighlight/resources/texthighlight.css"]
 
         },
 
@@ -140,30 +149,33 @@
 
                 // set shortcut to help functions
                 $ = this.ccm.helper;
+
                 const texthighlight = $.html(self.texthighlight);
-                texthighlight.name = createUniqueId();
+
+                texthighlight.setAttribute("name",createUniqueId());
 
             };
 
 
             this.start = async () => {
+
                 let shadow;
                 let selection;
                 let range;
                 let markElement;
-
-
 
                 const texthighlight = $.html(self.texthighlight, {
                     highlight: function (e) {
                         const button = e.srcElement;
                         const color = button.style.background;
                         if (!isAlreadyMarked()) {
-                            surroundText(color);
+                            const id = create_UUID();
+                            addHighlight(id, selection, range, color);
                         }else{
                             const mark = getMarkElement();
                             mark.style.background = color;
-                            updateComment(mark.id,color,null);
+                            const id = mark.className;
+                            updateComment(id,color,null);
 
                         }
                         setContent(text.innerHTML);
@@ -199,20 +211,33 @@
                     }
 
                 });
-                let id = texthighlight.name;
+
+                let id = texthighlight.getAttribute("name");
 
                 const text = texthighlight.querySelector('#text');
+                // init element with current content
                 getContent(text.innerHTML);
+
                 text.onmouseup = (e) => {
                     handleSelection();
                 }
+                // hide context menu if text not selected
                 hideMenu();
+
                 $.setContent(self.element, texthighlight);
 
+                /**
+                 * handle selection to mark
+                 */
                 function handleSelection() {
 
                     shadow = self.element.parentNode;
-                    selection = shadow.getSelection();
+                    if(shadow.getSelection){
+                        selection = shadow.getSelection();
+                    }else {
+                        selection = window.getSelection();
+                    }
+
                     range = selection.getRangeAt(0);
                     const edit =texthighlight.querySelector("#edit");
                     edit.style.display ="none";
@@ -231,42 +256,40 @@
 
                 }
 
-                function surroundText(color) {
-                    const mark = document.createElement("mark");
-                    mark.style.background = color;
-                    mark.id = create_UUID();
 
+                function surroundMark(color, id, range){
+                    const mark = document.createElement("mark");
+                    mark.style.backgroundColor = color;
+                    mark.classList.add(id);
                     mark.appendChild(range.extractContents());
                     range.insertNode(mark);
-                    selection.removeAllRanges();
-
                 }
 
                 function deleteMark() {
                     if (isAlreadyMarked()) {
                         const elem = getMarkElement();
-                        elem.replaceWith(...elem.childNodes);
+                        const markId = elem.className;
+                        if(!markId){
+                            return;
+                        }
+                        let markList = texthighlight.querySelectorAll("."+ markId);
+                        markList.forEach(mark => {
+                            mark.replaceWith(...mark.childNodes);
+                        })
+
                         hideMenu();
-                        self.db.del(markElement.id);
-
-
+                        self.db.del(markId);
                     }
                 }
 
                 function isAlreadyMarked() {
-                    // Parent element von selektiertem text
                     const elem = selection.anchorNode.parentElement;
-                    // Am nächsten vorhandene mark element von selektiertem text
                     const closeElem = elem.closest('mark');
-                    // wenn parent element mark element ist dann ist es markiert
-                    // wenn selektierte Text in closeElem ist dann ist es auch markiert
                     if (elem.nodeName === "MARK" || (closeElem && closeElem.contains(elem))) {
                         return true;
                     } else {
                         return false;
                     }
-
-
                 }
 
                 function getMarkElement(){
@@ -278,10 +301,11 @@
                         return closeElem;
                     }
                     return null;
-
-
                 }
 
+                /**
+                 * prepare and show context menu
+                 */
                 function showMenu(){
                     hideCommentArea();
                     defaultTextArea();
@@ -294,10 +318,10 @@
                     }else{
                         comment.style.visibility = "visible";
                         trash.style.visibility = "visible";
-                        getComment(markElement.id);
+                        getComment(markElement.className);
                     }
                     setMenuPosition();
-                    menu.style.visibility = "visible"
+                    menu.style.visibility = "visible";
                 }
 
                 function hideMenu(){
@@ -313,6 +337,9 @@
                     hideCommentArea();
                 }
 
+                /**
+                 * set menu position top or bottom
+                 */
                 function setMenuPosition(){
                     const clientRect = range.getBoundingClientRect();
                     const menu = texthighlight.querySelector("#contextmenu");
@@ -322,11 +349,7 @@
                         menu.style.top = clientRect.bottom +"px";
                     }else{
                         menu.style.top = (clientRect.bottom -  clientRect.height - menu.clientHeight) + "px";
-
                     }
-
-
-
                 }
 
                 function showCommentArea(){
@@ -358,12 +381,11 @@
                     self.db.set({key:id,value:content});
 
                 }
+
                 function getContent(content){
 
                     self.db.get(id).then(
-
                         existContent=> {
-
                             if(existContent && existContent.value){
                                 text.innerHTML = existContent.value;
                             }else{
@@ -375,8 +397,8 @@
                 }
 
                 function saveComment() {
-                    const id = markElement.id;
-                    const color = markElement.style.background;
+                    const id = markElement.className;
+                    const color = markElement.style.backgroundColor;
                     const text = texthighlight.querySelector("#comment-area");
                     const comment = text.value;
 
@@ -395,7 +417,7 @@
                             if(comment){
                                 const text =texthighlight.querySelector("#comment-area");
                                 text.value = comment.value.comment;
-                                text.style.background = comment.value.color;
+                                text.style.backgroundColor = comment.value.color;
                                 text.readOnly = true;
                                 const edit =texthighlight.querySelector("#edit");
                                 edit.style.display ="block";
@@ -460,25 +482,208 @@
                 }
 
 
+                function addHighlight(id, selection, range, color){
+                    let root = range.commonAncestorContainer;
+                    let start = range.startContainer;
+                    let end = range.endContainer;
+
+                    let firstElement = start.parentElement;
+                    let lastElement = end.parentElement;
+                    let nextElement = firstElement.nextElementSibling;
+
+                    // if selected text is not nested then mark directly the text
+                    if(start.parentElement === root || root.nodeType === 3 || end.parentElement.contains(start.parentElement)){
+                        surroundMark(color, id, range);
+                    }else{
+                        firstElement = findFirstElement(root, firstElement);
+                        nextElement = firstElement.nextElementSibling;
+                        // if text is nested then mark recursive first section
+                        traverseFirstElement(start, firstElement, color, range.startOffset, false, id );
+                        // mark the middle text section
+                        while(nextElement !== null && nextElement !== end.parentElement){
+                            if(nextElement.contains(end.parentElement)){
+                                lastElement = nextElement;
+                                break;
+                            }
+                            traverseMiddleElement(nextElement, color, id);
+                            nextElement = nextElement.nextSibling;
+                        }
+                        // if last element not contains nested element then mark the last section
+                        if(end.parentElement === lastElement){
+                            traverseLastElement(end, lastElement, color, range.endOffset, id);
+                        }else{
+                            // if last element contains nested then mark recursive the nested sections
+                            traverseDeepElement(end.parentElement, lastElement, color, range.endOffset, id);
+                        }
+
+                    }
+                    // after mark remove the selection
+                    selection.removeAllRanges();
+
+                }
+
+                /**
+                 * traverse first element from start selection and mark it
+                 * @param start
+                 * @param element
+                 * @param color
+                 * @param startOffset
+                 * @param after
+                 * @param id
+                 * @returns {boolean}
+                 */
+                function traverseFirstElement(start, element, color, startOffset, after, id) {
+                    if(element.nodeType === 3){
+                        const originalText = element.textContent;
+                        if(start === element){
+                            if(isMark(element)){
+                                return true;
+                            }
+                            const markText = originalText.substring(startOffset);
+                            const prevText = originalText.substring(0,startOffset);
+                            const rootElement = element.parentElement;
+                            const mark = markAndReplace(element,markText,color,id);
+                            if(prevText){
+                                const prevElement = document.createTextNode(prevText);
+                                rootElement.insertBefore(prevElement, mark);
+                            }
+                            return true;
+                        }else if(after === undefined || after === true ){
+                            if(isMark(element)){
+                                return true;
+                            }
+                            markAndReplace(element, originalText, color, id);
+                            return  true;
+                        }else{
+                            return false;
+                        }
+                    }
+                    for(let i = 0; i< element.childNodes.length ; ++i){
+                        after = traverseFirstElement(start, element.childNodes[i], color, startOffset, after, id);
+                    }
+
+                }
+
+                /**
+                 * traverse middle element of selection and mark it
+                 * @param element
+                 * @param color
+                 * @param id
+                 */
+                function traverseMiddleElement(element, color, id){
+                    if(element.nodeType === 3){
+                        if(isMark(element)){
+                            return;
+                        }
+                        const originalText = element.textContent;
+                        markAndReplace(element, originalText, color, id);
+                        return;
+                    }
+                    for(let i = 0; i< element.childNodes.length; ++i){
+                        traverseMiddleElement(element.childNodes[i], color, id);
+                    }
+                }
+
+                /**
+                 * traverse last element from end selection and mark it
+                 * @param end
+                 * @param element
+                 * @param color
+                 * @param endOffset
+                 * @param id
+                 * @returns {boolean}
+                 */
+                function traverseLastElement(end, element, color , endOffset, id){
+                    if(element.nodeType === 3){
+                        const originalText = element.textContent;
+                        if(end === element){
+                            if(isMark(element)){
+                                return false;
+                            }
+                            const markText = originalText.substring(0,endOffset);
+                            const nextText = originalText.substring(endOffset);
+                            const mark = markAndReplace(element, markText, color,id);
+                            if(nextText){
+                                mark.outerHTML += nextText;
+                            }
+                            return false;
+                        }else{
+                            if(isMark(element)){
+                                return true;
+                            }
+                            markAndReplace(element, originalText, color, id);
+                            return true;
+                        }
+                    }
+                    for( let i=0 ; element.childNodes.length; ++i){
+                        let next = traverseLastElement(end, element.childNodes[i], color, endOffset, id);
+                        if(next !== undefined && next === false){
+                            return ;
+                        }
+                    }
+                }
+
+                /**
+                 * * traverse deep element of last element of selection and mark it
+                 * @param lastElement
+                 * @param element
+                 * @param color
+                 * @param endOffSet
+                 * @param id
+                 * @returns {boolean}
+                 */
+                function traverseDeepElement(lastElement, element, color, endOffSet, id){
+                    if(element.nodeType === 3){
+                        const originalText = element.textContent;
+                        if(element.parentElement ===lastElement){
+                            const markText = originalText.substring(0,endOffset);
+                            const nextText = originalText.substring(endOffset);
+                            const mark = markAndReplace(element, markText, color,id);
+                            if(nextText){
+                                mark.outerHTML += nextText;
+                            }
+                            return false;
+                        }else{
+                            markAndReplace(element, originalText, color, id);
+                            return true;
+                        }
+                    }
+                    for(let i= 0; element.childNodes.length; ++i){
+                        let next = traverseDeepElement(lastElement, element.childNodes[i], color, endOffSet, id);
+                        if(!next){
+                            return;
+                        }
+                    }
+                }
+
+                function findFirstElement(container, startElement){
+                    let firstElement = startElement;
+                    while(firstElement.parentElement !== container){
+                        firstElement = firstElement.parentElement;
+                    }
+                    return firstElement;
+                }
 
 
+                function isMark(e){
+                    return e.parentElement.nodeName === "MARK";
+                }
 
-                /* function removeDummy() {
-                  const elem = document.getElementById('trash');
-                  elem.parentNode.removeChild(elem);
-                  return false;
-                 }*/
+                function createMark(text, color, id){
+                    let mark = document.createElement("mark");
+                    mark.classList.add(id);
+                    mark.style.backgroundColor = color;
+                    mark.appendChild(document.createTextNode(text));
+                    return mark;
+                }
 
-
+                function markAndReplace(e, text, color, id){
+                    let mark = createMark(text, color, id);
+                    let rootElement = e.parentElement;
+                    rootElement.replaceChild(mark, e);
+                    return mark;
+                }
             };
-            /*  makeDelBtn: function delet(){
-                 const delBtn = document.createElement('button');
-                 delBtn.textContent = 'Delete';
-                 delBtn.className ='delBtn';
-                 return delBtn;
-              }*/
-
-
         }
 
 
