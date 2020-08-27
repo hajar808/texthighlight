@@ -352,7 +352,7 @@
                         comment.style.visibility ="hidden";
                         trash.style.visibility ="hidden";
                     }else{
-                        if(markElement.className){
+                        if(markElement){
                             comment.style.visibility = "visible";
                             trash.style.visibility = "visible";
                             getComment(markElement.className);
