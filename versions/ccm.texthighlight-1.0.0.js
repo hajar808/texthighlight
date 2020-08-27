@@ -245,7 +245,6 @@
                         selection = window.getSelection();
                     }
                     if (selection.rangeCount <= 0){
-                        console.log(selection.rangeCount)
                         return;
                     }
 

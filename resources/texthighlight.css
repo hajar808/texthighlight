@@ -112,5 +112,24 @@
         width: 60px;
 
     }
+    #cancel{
+        width: 25%;
+        height: 40px;
+
+    }
+
+    #save{
+        width: 25%;
+        height: 40px;
+
+    }
+    #comment-area{
+        height: 200px;
+        width: 450px;
+        font-size: 25pt;
+    }
+    #edit {
+        height: 80px;
+    }
 
 }
