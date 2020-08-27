@@ -352,9 +352,12 @@
                         comment.style.visibility ="hidden";
                         trash.style.visibility ="hidden";
                     }else{
-                        comment.style.visibility = "visible";
-                        trash.style.visibility = "visible";
-                        getComment(markElement.className);
+                        if(markElement.className){
+                            comment.style.visibility = "visible";
+                            trash.style.visibility = "visible";
+                            getComment(markElement.className);
+                        }
+
                     }
                     setMenuPosition();
                     menu.style.visibility = "visible";
