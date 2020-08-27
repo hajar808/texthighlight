@@ -219,7 +219,7 @@
                 getContent(text.innerHTML);
 
                 if(isTouchScreen()){
-                    text.ontouchstart = (e) => {
+                    text.ontouchend = (e) => {
                         handleSelection();
                     }
                 }else{
