@@ -89,3 +89,28 @@
     outline: none;
 
 }
+
+
+@media only screen and (max-width: 1000px) {
+    .color-btn{
+        height: 30px;
+        width: 30px;
+
+    }
+    #contextmenu{
+
+        padding:2.3%;
+
+    }
+    #comment{
+        height: 30px;
+        width: 42px;
+
+    }
+    #trash{
+        height: 30px;
+        width: 40px;
+
+    }
+
+}
