@@ -220,10 +220,10 @@
 
                 if(isTouchScreen()){
                     text.ontouchend = (e) => {
-                        e.preventDefault && e.preventDefault();
-                        e.stopPropagation && e.stopPropagation();
-                        e.cancelBubble = true;
-                        e.returnValue = false;
+                        if(e.cancelable){
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
                         handleSelection();
                     }
                 }else{
