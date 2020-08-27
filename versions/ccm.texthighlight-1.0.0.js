@@ -248,6 +248,10 @@
                     }else {
                         selection = window.getSelection();
                     }
+                    if (selection.rangeCount <= 0){
+                        console.log(selection.rangeCount)
+                        return;
+                    }
 
                     range = selection.getRangeAt(0);
                     const edit =texthighlight.querySelector("#edit");
