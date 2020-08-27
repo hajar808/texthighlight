@@ -222,6 +222,8 @@
                     text.ontouchcancel = (e) => {
                         e.preventDefault && e.preventDefault();
                         e.stopPropagation && e.stopPropagation();
+                        e.cancelBubble = true;
+                        e.returnValue = false;
                         handleSelection();
                     }
                 }else{
