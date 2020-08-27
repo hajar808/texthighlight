@@ -219,7 +219,7 @@
                 getContent(text.innerHTML);
 
                 if(isTouchScreen()){
-                    text.ontouchcancel = (e) => {
+                    text.ontouchend = (e) => {
                         e.preventDefault && e.preventDefault();
                         e.stopPropagation && e.stopPropagation();
                         e.cancelBubble = true;
