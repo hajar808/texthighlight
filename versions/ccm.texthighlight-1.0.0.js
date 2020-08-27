@@ -220,10 +220,6 @@
 
                 if(isTouchScreen()){
                     text.ontouchend = (e) => {
-                        if(e.cancelable){
-                            e.preventDefault();
-                            e.stopPropagation();
-                        }
                         handleSelection();
                     }
                 }else{
